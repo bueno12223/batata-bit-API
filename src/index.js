@@ -1,15 +1,19 @@
 const express = require('express');
-const notFoundHandler = require('../../video-api/utils/middleware/notFoundHandler');
-const app = express();
 
+const notFoundHandler = require('../../video-api/utils/middleware/notFoundHandler');
+require('./lib/mongo');
 const richAPI = require('./routes/RichAPI');
 
+const app = express();
+
+// database
+require('./lib/mongo');
+app.use(express.json());
+// routes
 richAPI(app);
   
-app.use(notFoundHandler)
-
-
 // 404 not found
+app.use(notFoundHandler);
 
 // midlewares
 

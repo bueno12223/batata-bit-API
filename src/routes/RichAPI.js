@@ -1,17 +1,35 @@
-const axios = require('axios');
-
+const UserModel = require('../utils/models/user');
 function richAPI(app) {
-    app.use('/user/:id', async function(req, res, next) {
-        const {id} = req.params;
-        axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=0c7a6b113add233831a0d6eec346cd98`)
-          .then(response => {
-            res.status(200)
-            console.log(response.headers)
-            res.json({'data': response.headers});
-          })
-          .catch(error => {
-            next(error)
-          });
-  }); 
+  app.get('/', async function(req, res,next) {
+    const users = await UserModel.find();
+    res.status(200).json(users);
+  })
+
+app.put('/:id', function(req, res,next) {
+  res.status(200).json({'data': req.query})
+})
+
+app.post('/:id',async function(req, res,next) {
+  const data = JSON.parse(req.body.query);
+  const {userId, name, email, password} = data;
+  const userData = new UserModel({
+    userId,
+    name,
+    email,
+    password
+  });
+  await userData.save((err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(2);
+      res.status(200).json({'message': 'note saved'});
+   }
+  })
+})
+
+app.delete('/:id', function(req, res,next) {
+  res.status(200).json({'data': 'deleted'})
+})
 };
 module.exports = richAPI;

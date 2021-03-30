@@ -1,4 +1,5 @@
 Config => config.js: tiene la configuración para importar las variables de entorno
 lib => mongo.js: tiene la configuración para conectarse a Mongo Atlas
 Routes => maneja las rutas y las peticiones
+Utils => maneja los midlewares
 config.js => ejecuta las rutas y los midlewares
