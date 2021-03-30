@@ -18,6 +18,8 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    experience: String,
+    aboutYou: String,
 },{ Timestamp: true})
 
 module.exports = model('user', userSchema);

@@ -34,12 +34,15 @@ class MongoLib {
       }
     // POST
     async post(req, res,next) {
-        const {userId, name, email, password} = req.body;
+        const {userId, name, email, password, experience , aboutYou  } = req.body;
         const userData = new UserModel({
           userId,
           name,
           email,
-          password
+          password,
+          experience,
+          aboutYouexperience,
+          aboutYou
         });
         await userData.save((err) => 
             err
@@ -49,13 +52,15 @@ class MongoLib {
       }
       // PUT 
       async put(req, res,next) {
-        const {userId, name, email, password} = req.body;
+        const {userId, name, email, password,  experience , aboutYou } = req.body;
         try{
             await UserModel.findByIdAndUpdate(req.params.id, {
                 userId,
                 name,
                 email,
-                password
+                password,
+                experience,
+                aboutYou
               } )
             res.status(201).json({'message': 'updated'});
         }catch(err){
@@ -72,7 +77,6 @@ class MongoLib {
             console.log(err)
         }   
       }
-
 }
 module.exports = MongoLib;
 

@@ -2,7 +2,7 @@ const express = require('express');
 
 const notFoundHandler = require('../../video-api/utils/middleware/notFoundHandler');
 const MongoLib = require('./lib/mongo');
-const richAPI = require('./routes/RichAPI');
+const userPetition = require('./routes/userPetition');
 
 const dataBase = new MongoLib();
 
@@ -13,7 +13,7 @@ dataBase.connect();
 app.use(express.json());
 
 // routes
-richAPI(app);
+userPetition(app);
   
 // 404 not found
 app.use(notFoundHandler);
