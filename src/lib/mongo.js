@@ -33,18 +33,13 @@ class MongoLib {
         }   
       }
     // POST
-    async post(req, res,next) {
-        const {userId, name, email, password  } = req.body;
-        const userData = new UserModel({
-          userId,
-          name,
-          email,
-          password
-        });
-        await userData.save((err) => 
-            err
-            ? console.log(err)
-            : res.status(200).json({'message': 'note saved', 'id': userData._id })
+    async post(body) {
+        console.log(body)
+        const userData = new UserModel(body);
+        await userData.save((err) => {
+            if(err){console.log(err)}
+            return userData._id
+          }
         )
       }
       // PUT 
