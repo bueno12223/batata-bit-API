@@ -13,6 +13,8 @@
   "dependencies": {
     "@hapi/boom": "^9.1.2",
     "axios": "^0.16.2",
+    "chalk": "^4.1.0",
+    "crypto": "^1.0.1",
     "express": "^4.17.1",
     "mongoose": "^5.12.2"
   },

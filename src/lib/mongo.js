@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-
 const { config } = require('../config/config');
 const UserModel = require('../utils/models/user');
+const ApiKeyModel = require('../utils/models/apiKey');
 
 class MongoLib {
     constructor(){
@@ -34,15 +34,12 @@ class MongoLib {
       }
     // POST
     async post(req, res,next) {
-        const {userId, name, email, password, experience , aboutYou  } = req.body;
+        const {userId, name, email, password  } = req.body;
         const userData = new UserModel({
           userId,
           name,
           email,
-          password,
-          experience,
-          aboutYouexperience,
-          aboutYou
+          password
         });
         await userData.save((err) => 
             err
@@ -58,9 +55,7 @@ class MongoLib {
                 userId,
                 name,
                 email,
-                password,
-                experience,
-                aboutYou
+                password
               } )
             res.status(201).json({'message': 'updated'});
         }catch(err){
@@ -76,6 +71,17 @@ class MongoLib {
         }catch(err){
             console.log(err)
         }   
+      }
+      async create(collection, data) {
+          const ApiKey = new ApiKeyModel({...data});
+          await ApiKey.save((err) => 
+            err
+            ? console.log(err)
+            : res.status(200).json({'message': 'note saved', 'id': apiKey._id })
+        )
+        
+
+        
       }
 }
 module.exports = MongoLib;
