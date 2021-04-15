@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { config } = require('../config/config');
 const UserModel = require('../utils/models/user');
-const ApiKeyModel = require('../utils/models/apiKey');
+const bcrypt = require('bcrypt');
 
 class MongoLib {
     constructor(){
@@ -14,69 +14,43 @@ class MongoLib {
         this.conection.once('open', () => console.log('Connected succesfully to mongo') );
     }  
     //  GET ALL
-    async getAll(req, res,next) {
-        try{
-            const users = await UserModel.find();
-            res.status(200).json(users);
-        }catch(err){
-            console.log(err)
-        }   
+    async getByParams(body) {
+      const users =  await UserModel.find(body);
+      return users
       }
     // GET BY ID
-    async get(req, res,next) {
-        const params = req.params.id;
-        try{
-            const users = await UserModel.findById(params);
-            res.status(200).json(users);
-        }catch(err){
-            console.log(err)
-        }   
+    async getById(id) {
+      const users = await UserModel.findById(id);
+      return users 
       }
     // POST
-    async post(body) {
-        console.log(body)
-        const userData = new UserModel(body);
-        await userData.save((err) => {
-            if(err){console.log(err)}
-            return userData._id
-          }
-        )
+    async post({userId, name, email, password, isAdmin  }) {
+        const userData = new UserModel({
+          userId,
+          name,
+          email,
+          password: await bcrypt.hash(password, 10),
+          isAdmin
+        });
+        await userData.save((err) =>{ return userData._id });
       }
       // PUT 
-      async put(req, res,next) {
-        const {userId, name, email, password,  experience , aboutYou } = req.body;
-        try{
-            await UserModel.findByIdAndUpdate(req.params.id, {
-                userId,
-                name,
-                email,
-                password
-              } )
-            res.status(201).json({'message': 'updated'});
-        }catch(err){
-            console.log(err)
-        }
+      async put( {userId, name, email, password }, id) {
+        const params = {userId, name, email, password };
+        userId ? userId : delete params.userId
+        name ? name : delete params.name
+        email ? email : delete params.email
+        password ? await bcrypt.hash(password, 10) : delete params.password
+        await UserModel.findByIdAndUpdate(id,params);
       }
       // DELET
-      async delet(req, res,next) {
-        const params = req.params.id;
+      async delet(id) {
         try{
-            const users = await UserModel.findByIdAndDelete(params);
+            const users = await UserModel.findByIdAndDelete(id);
             res.status(200).json(users);
         }catch(err){
             console.log(err)
         }   
-      }
-      async create(collection, data) {
-          const ApiKey = new ApiKeyModel({...data});
-          await ApiKey.save((err) => 
-            err
-            ? console.log(err)
-            : res.status(200).json({'message': 'note saved', 'id': apiKey._id })
-        )
-        
-
-        
       }
 }
 module.exports = MongoLib;

@@ -1,9 +1,8 @@
 const express = require('express');
-
-const notFoundHandler = require('../../video-api/utils/middleware/notFoundHandler');
+const session = require("express-session");
+const notFoundHandler = require('./utils/middleware/notFoundHandler');
 const MongoLib = require('./lib/mongo');
 const userPetition = require('./routes/userPetition');
-const ApiKey = require('./scripts/mongo/seedApiKeys')
 const dataBase = new MongoLib();
 const app = express();
 
