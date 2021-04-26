@@ -1,25 +1,29 @@
 const express = require('express');
-const session = require("express-session");
 const notFoundHandler = require('./utils/middleware/notFoundHandler');
-const MongoLib = require('./lib/mongo');
-const userPetition = require('./routes/userPetition');
-const dataBase = new MongoLib();
+
+
+
+const passport = require('passport');
+
 const app = express();
 
 // database
-dataBase.connect();
 app.use(express.json());
+
+// passport 
+app.use(passport.initialize());
+app.use(passport.session());
 // routes
-userPetition(app);
+
   
 // 404 not found
 app.use(notFoundHandler);
 
 // midlewares
 
-// error handler
+// erro 
 
 
-app.listen(3000, function () {
-    console.log(`http://localhost:3000`);   
+app.listen(3001, function () {
+    console.log(`http://localhost:3001`);   
 });

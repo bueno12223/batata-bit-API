@@ -14,19 +14,19 @@
     "@hapi/boom": "^9.1.2",
     "axios": "^0.16.2",
     "bcrypt": "^5.0.1",
-    "chalk": "^4.1.0",
     "crypto": "^1.0.1",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
+    "id-creator": "^1.2.3",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.12.2",
+    "moment": "^2.29.1",
+    "mongoose": "^5.12.5",
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
-    "dotenv": "^8.2.0",
-    "mongodb": "^3.6.5"
+    "dotenv": "^8.2.0"
   }
 }
