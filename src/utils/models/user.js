@@ -1,6 +1,7 @@
 const {Schema, model} = require('mongoose');
 const { v1 } = require("id-creator");
-const moment = require('moment')
+const moment = require('moment');
+const { KeyObject } = require('crypto');
 
 const userSchema = new Schema({
     userAcconut: {
@@ -21,8 +22,10 @@ const userSchema = new Schema({
             total: {type: Number, default: 0.00}
         },
         transacctions: [
-            {
+            { 
+            _id: String,
             to:  String,
+            since: String,
             date: {type: Date, default: moment().format('ll')  },
             ammount : Number, default: 0.00,
             type: {type: String, default: 'transacción rápida'},
