@@ -4,6 +4,7 @@ const passport = require('passport');
 
 const userData = require('./routes/userData');
 const transacctionsUser = require('./routes/userTransaccions');
+const userGoals = require('./routes/userGoals');
 const app = express();
 
 // midlewares
@@ -15,6 +16,7 @@ app.use(passport.session());
 // routes
 userData(app);
 transacctionsUser(app)
+userGoals(app);
   
 // 404 not found
 app.use(notFoundHandler);

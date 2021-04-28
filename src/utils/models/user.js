@@ -1,7 +1,6 @@
 const {Schema, model} = require('mongoose');
 const { v1 } = require("id-creator");
 const moment = require('moment');
-const { KeyObject } = require('crypto');
 
 const userSchema = new Schema({
     userAcconut: {
@@ -34,11 +33,10 @@ const userSchema = new Schema({
         ],
         goals: [
             {
-                id: {type: Number, default: v1(6, false)},
-                ammount: Number, 
-                date: String,
+                ammount: Number,
+                end: Date,
                 title: String,
-                icon: String
+                icon: String,
             }
         ],
         
@@ -50,6 +48,3 @@ const userSchema = new Schema({
 },{ Timestamp: true})
 
 module.exports = model('user', userSchema);
-
-
-
