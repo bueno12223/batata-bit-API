@@ -11,36 +11,42 @@ const userSchema = new Schema({
     },
     userPersonalData: {
         visa: {
-            numbers : {type: Number, default: v1(8, false)},
+            numbers : {type: Number, default: v1(16, false)},
             date : { type: String, default: moment().add(5, 'Y').format('MM/YY') },
-            name: {type: String, default: this.userAcconut.fullName },
-            pin: {default: v1(4, false)}
+            pin: {type: Number, default: v1(4, false)}
+        },
+        money : {
+            incomer: {type: Number, default: 0.00},
+            spend: {type: Number, default: 0.00},
+            total: {type: Number, default: 0.00}
         },
         transacctions: [
             {
-            id: {default: v1(16, true), unique: true},
             to:  String,
-            date: { type: Date, default: moment().format('ll')  },
-            ammount : Number,
+            date: {type: Date, default: moment().format('ll')  },
+            ammount : Number, default: 0.00,
             type: {type: String, default: 'transacción rápida'},
-            icon: String
+            icon: {type: String, default: 'transacción rápida'}
             }
         ],
         goals: [
             {
-                id: {default: v1(6, false)},
+                id: {type: Number, default: v1(6, false)},
                 ammount: Number, 
                 date: String,
                 title: String,
                 icon: String
             }
         ],
-        userFriends: [String],
         
     },
+    accsesKey: { requiered: true, type: String, unique: true, default: v1(16, true) },
     updated: { 
         type: Date, 
         default: moment().format() }
 },{ Timestamp: true})
 
 module.exports = model('user', userSchema);
+
+
+
