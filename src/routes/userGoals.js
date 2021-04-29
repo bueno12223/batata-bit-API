@@ -1,14 +1,15 @@
 const express = require('express');
 const userModel = require('../utils/models/user');
+const validateTransaccion = require('../utils/middleware/validateTransacction')
 const { v1 } = require("id-creator");
 const moment = require('moment');
+const { findByIdAndUpdate } = require('../utils/models/user');
 
 const userGoals = (app) => {
     const router = express.Router()
     app.use('/goal', router);
     // get goal by id
     router.get('/:id', async (req, res, next) => {
-        console.log('what')
         const id = req.params.id
         try{
             const userData = await userModel.findOne({'userPersonalData.goals._id': id});
@@ -24,7 +25,7 @@ const userGoals = (app) => {
     // create a goal
     router.put('/:id', async(req, res, next) => {
         const id = req.params.id;
-        const {  end, title, icon } = req.body;
+        const {  end, title, icon, goal } = req.body;
         try{
             const params = {
                 $addToSet: {
@@ -32,7 +33,8 @@ const userGoals = (app) => {
                         ammount : 0, 
                         end: moment(end).format("L"), 
                         title, 
-                        icon
+                        icon,
+                        goal
                       }
                 }
             }
@@ -45,12 +47,21 @@ const userGoals = (app) => {
         
     })
     // put money in a goal
-    router.put('/deposit/:id', async(req, res, next) => {
+    router.put('/deposit/:id',
+    (req, res, next) => validateTransaccion(req, res, next),
+     async(req, res, next) => {
         const id = req.params.id;
-        const {ammount} = req.body;
+        const { ammount } = req.body;
         try{
             const params = {
-                $inc: { 'userPersonalData.goals.$.ammount' : ammount}
+                $inc: { 
+                    'userPersonalData.goals.$.ammount' : ammount,
+                    'userPersonalData.money.spend' : ammount ,
+                    'userPersonalData.money.total' : ammount * -1
+                },
+                $addToSet: {
+                    'userPersonalData.transacctions': { to: 'you', since: id, ammount, type: 'goal transacction', icon }
+                }
             }
             await userModel.findOneAndUpdate({'userPersonalData.goals._id': id}, params);
             res.status(201).json({'message': 'updated done', 'ammout': ammount});
@@ -59,6 +70,38 @@ const userGoals = (app) => {
             res.status(401).json({'message':'all params are required'});
         }
         
+    })
+    // breake goal
+    router.delete('/:id', async (req, res, next) => {
+
+        const id = req.params.id
+        try{
+            // add the money
+            const userData = await userModel.findOne({'userPersonalData.goals._id': id})
+            const {userPersonalData: {goals}} = userData
+            const transacction = goals.filter(e => e._id == id)
+            const { ammount, icon } = transacction;
+            const paramsInc = { 
+                $inc: {
+                    "userPersonalData.money.incomer": ammount,
+                    "userPersonalData.money.total": ammount,
+                    },
+                $addToSet: {
+                    'userPersonalData.transacctions': { to: 'you', since: id, ammount, type: 'goal transacction', icon }
+                }
+            } 
+            await findOneAndUpdate({'userPersonalData.goals._id': id}, paramsInc);
+            // delete the goal
+
+            const params = {
+                $pull: { 'userPersonalData.goals': { _id: id }},
+            }
+            await userModel.findOneAndUpdate({}, params);
+            res.status(200).json({'message': 'delete success', 'id': id})
+        }catch(e) {
+            next(e);
+            res.status(401)
+        }
     })
 }
 module.exports = userGoals;

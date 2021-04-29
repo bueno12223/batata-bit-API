@@ -37,6 +37,7 @@ const userSchema = new Schema({
                 end: Date,
                 title: String,
                 icon: String,
+                goal:  Number
             }
         ],
         

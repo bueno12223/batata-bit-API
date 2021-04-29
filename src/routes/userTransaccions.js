@@ -43,7 +43,6 @@ const transacctionsUser = (app) => {
     })
     router.put('/deposit', async(req, res, next) => {
         const {ammount, to} = req.body;
-        console.log(to)
         try{
             const transaccionId = v1(10, true);
             const params = { 
