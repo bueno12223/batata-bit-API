@@ -13,34 +13,51 @@ userPetition = (app) => {
 
     app.use('/api', router);
     // get user data
-    router.get('/:id', async(req, res, next) => {
-        const id = req.params.id;
-        console.log(id)
+    router.get('/friends', async(req, res, next) => {
         try{
-            const user = await UserModel.findById(id);
-            console.log(user)
-            delete user.userAcconut.password
-            res.status(200).json({'user': user})
+            const user = await UserModel.find({});
+            const friends = []
+            user.forEach(e => friends.push({
+                email: e.userAcconut.email,
+                fullName: e.userAcconut.fullName
+            }
+            ));
+            res.status(200).json({'user': friends});
         }catch(e) {
-            next(e)
-            res.status(400).json({'message': 'bad request'})
+            next(e);
+            res.status(401).json({'message': 'friends not found'});
+
+        }
+    })
+    router.get('/', async(req, res, next) => {
+        const { email } = req.body;
+        try{
+            let user = await UserModel.findOne({'userAcconut.email': email});
+            user.userAcconut.password = null;
+            user.userAcconut.accessKey = null;
+            user.userPersonalData.visa.pin = null;
+
+            console.log(user.userAcconut);
+            res.status(200).json({'user': user});         
+        }catch (e){
+            next(e);
+            res.status(400).json({'message': 'bad request'}); 
         }
     })
     // create user
     router.post('/', async (req, res, next) => {
         const { userId, email, fullName, password } = req.body;
-
         try{
             if(!userId  || !email || !fullName || !password ){
                 res.status(400).json({'message': 'al params are required'})
             }
-            const hashAccessKey = await bcrypt.hash(v1(16, true), 10);
             const hashPassword = await bcrypt.hash(password, 8);
-            const userData = new UserModel({userAcconut: { userId, email, fullName, password: hashPassword }, accessKey: hashAccessKey });
+            const hashAccessKey = await bcrypt.hash(v1(10, true), 8);
+            const userData = new UserModel({userAcconut: { userId, email, fullName, password: hashPassword, accessKey: hashAccessKey} });
             await userData.save((err) => { 
                 if(err) {
-                    console.log(err, err.code)
-                    return res.status(400).json({'message': 'error in post data'})
+                    next(err);
+                    return res.status(400).json({'message': 'error in post data'});
                 }
                 res.status(201).json({'message': 'user post it succsessfully', 'id': userData._id } ) })
         }catch(e) {

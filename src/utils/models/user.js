@@ -1,13 +1,13 @@
 const {Schema, model} = require('mongoose');
 const { v1 } = require("id-creator");
 const moment = require('moment');
-
 const userSchema = new Schema({
     userAcconut: {
         userId: { requiered: true, type: String, unique: true  }, 
-        email: { requiered: true, type: String , unique: true  },
         fullName: { requiered: true, type: String },
-        password: { requiered: true, type: String }
+        password: { requiered: true, type: String },
+        email: { requiered: true, type: String, unique: true },
+        accessKey: { requiered: true, type: String, unique: true }
     },
     userPersonalData: {
         visa: {
@@ -22,12 +22,11 @@ const userSchema = new Schema({
         },
         transacctions: [
             { 
-            _id: String,
             to:  String,
             since: String,
             date: {type: Date, default: moment().format('ll')  },
             ammount : Number, default: 0.00,
-            type: {type: String, default: 'transacción rápida'},
+            transacction_type: {type: String, default: 'transacción rápida'},
             icon: {type: String, default: 'transacción rápida'}
             }
         ],
@@ -42,7 +41,6 @@ const userSchema = new Schema({
         ],
         
     },
-    accsesKey: { requiered: true, type: String, unique: true, default: v1(16, true) },
     updated: { 
         type: Date, 
         default: moment().format() }
