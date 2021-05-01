@@ -1,13 +1,12 @@
 const express = require('express');
 const userModel = require('../utils/models/user');
-const validateTransaccion = require('../utils/middleware/validateTransacction')
-const { v1 } = require("id-creator");
+const validateTransaccion = require('../utils/middleware/validateTransacction');
+const validateAuth = require('../utils/auth/validateAuth');
 const moment = require('moment');
-const { findByIdAndUpdate } = require('../utils/models/user');
 
 const userGoals = (app) => {
     const router = express.Router()
-    app.use('/goal', router);
+    app.use('/goal', validateAuth , router);
     // get goal by id
     router.get('/:id', async (req, res, next) => {
         const id = req.params.id
@@ -50,8 +49,7 @@ const userGoals = (app) => {
     router.put('/deposit/:id',
     (req, res, next) => validateTransaccion(req, res, next),
      async(req, res, next) => {
-        const id = req.params.id;
-        const { ammount } = req.body;
+        const { ammount, since } = req.body;
         try{
             const params = {
                 $inc: { 
@@ -60,10 +58,10 @@ const userGoals = (app) => {
                     'userPersonalData.money.total' : ammount * -1
                 },
                 $addToSet: {
-                    'userPersonalData.transacctions': { to: 'you', since: id, ammount, type: 'goal transacction', icon }
+                    'userPersonalData.transacctions': { to: 'you', since, ammount, type: 'goal transacction', icon }
                 }
             }
-            await userModel.findOneAndUpdate({'userPersonalData.goals._id': id}, params);
+            await userModel.findOneAndUpdate({'userPersonalData.goals._id': since}, params);
             res.status(201).json({'message': 'updated done', 'ammout': ammount});
         }catch(e){
             next(e);

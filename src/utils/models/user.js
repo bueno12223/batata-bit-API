@@ -39,6 +39,7 @@ const userSchema = new Schema({
                 goal:  Number
             }
         ],
+        userFriends: Array,
         
     },
     updated: { 

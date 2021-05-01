@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
+const passport = require('passport');
 const express = require('express');
 const UserModel = require('../utils/models/user');
 const config  = require('../config/index');
 const bcrypt = require('bcrypt');
+const validateAuth = require('../utils/auth/validateAuth');
 const { v1 } = require("id-creator");
+require('../utils/auth/basic');
 
 userPetition = (app) => {
     const URI = `mongodb://${config.config.dbUser}:${config.config.dbPassword}@cluster0-shard-00-00.og6lz.mongodb.net:27017,cluster0-shard-00-01.og6lz.mongodb.net:27017,cluster0-shard-00-02.og6lz.mongodb.net:27017/${config.config.dbname}?ssl=true&replicaSet=atlas-13giey-shard-0&authSource=admin&retryWrites=true&w=majority`;
@@ -12,32 +15,29 @@ userPetition = (app) => {
     const router = express.Router()
 
     app.use('/api', router);
-    // get user data
-    router.get('/friends', async(req, res, next) => {
-        try{
-            const user = await UserModel.find({});
-            const friends = []
-            user.forEach(e => friends.push({
-                email: e.userAcconut.email,
-                fullName: e.userAcconut.fullName
-            }
-            ));
-            res.status(200).json({'user': friends});
-        }catch(e) {
-            next(e);
-            res.status(401).json({'message': 'friends not found'});
 
-        }
-    })
-    router.get('/', async(req, res, next) => {
+    router.get('/test',validateAuth, 
+        (req, res, next) => {
+        res.status(200).json({'message': 'you can see the data'})
+    } )
+    // log in user
+    router.post('/log-in',
+        passport.authenticate('basic', {sesion: true }), 
+        async(req, res, next) => {
         const { email } = req.body;
         try{
             let user = await UserModel.findOne({'userAcconut.email': email});
             user.userAcconut.password = null;
             user.userAcconut.accessKey = null;
-            user.userPersonalData.visa.pin = null;
 
-            console.log(user.userAcconut);
+            const userData = await UserModel.find({});
+            const friends = []
+            userData.forEach(e => friends.push({
+                email: e.userAcconut.email,
+                fullName: e.userAcconut.fullName }))
+            
+            user.userPersonalData.userFriends = friends;
+
             res.status(200).json({'user': user});         
         }catch (e){
             next(e);
@@ -48,9 +48,6 @@ userPetition = (app) => {
     router.post('/', async (req, res, next) => {
         const { userId, email, fullName, password } = req.body;
         try{
-            if(!userId  || !email || !fullName || !password ){
-                res.status(400).json({'message': 'al params are required'})
-            }
             const hashPassword = await bcrypt.hash(password, 8);
             const hashAccessKey = await bcrypt.hash(v1(10, true), 8);
             const userData = new UserModel({userAcconut: { userId, email, fullName, password: hashPassword, accessKey: hashAccessKey} });
@@ -67,7 +64,7 @@ userPetition = (app) => {
     })
     
     // config user data
-    router.put('/:id', async (req, res, next) => {
+    router.put('/:id', validateAuth, async (req, res, next) => {
         const id = req.params.id;
         const data = req.body;
         try{
@@ -85,7 +82,7 @@ userPetition = (app) => {
         }
     })
     // delete user data
-    router.delete('/:id', async (req, res, next) => {
+    router.delete('/:id', validateAuth, async (req, res, next) => {
         const id = req.params.id;
         try{
             await UserModel.findByIdAndDelete(id);
