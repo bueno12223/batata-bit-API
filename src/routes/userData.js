@@ -5,7 +5,6 @@ const UserModel = require('../utils/models/user');
 const config  = require('../config/index');
 const bcrypt = require('bcrypt');
 const validateAuth = require('../utils/auth/validateAuth');
-const { v1 } = require("id-creator");
 require('../utils/auth/basic');
 
 userPetition = (app) => {
@@ -14,21 +13,41 @@ userPetition = (app) => {
     mongoose.connection.once('open', () => console.log('Connected succesfully to mongo') );
     const router = express.Router()
 
-    app.use('/api', router);
+    app.use('/user', router);
 
     router.get('/test',validateAuth, 
         (req, res, next) => {
         res.status(200).json({'message': 'you can see the data'})
     } )
     // log in user
-    router.post('/log-in',
-        passport.authenticate('basic', {sesion: true }), 
+    router.post('/log-in',passport.authenticate('basic', {sesion: true }),
         async(req, res, next) => {
+            const { email } = req.body;
+            try{
+                let user = await UserModel.findOne({'userAcconut.email': email});
+                user.userAcconut.password = null;
+
+                const userData = await UserModel.find({});
+                const friends = []
+                userData.forEach(e => friends.push({
+                    email: e.userAcconut.email,
+                    fullName: e.userAcconut.fullName }))
+                
+                user.userPersonalData.userFriends = friends;
+
+                res.status(200).json({'user': user});         
+            }catch (e){
+                next(e);
+                res.status(400).json({'message': 'bad request'}); 
+        }
+    })
+    // get user by sesion and email
+    router.post('/',validateAuth,
+    async(req, res, next) => {
         const { email } = req.body;
         try{
             let user = await UserModel.findOne({'userAcconut.email': email});
             user.userAcconut.password = null;
-            user.userAcconut.accessKey = null;
 
             const userData = await UserModel.find({});
             const friends = []
@@ -42,15 +61,15 @@ userPetition = (app) => {
         }catch (e){
             next(e);
             res.status(400).json({'message': 'bad request'}); 
-        }
-    })
+    }
+})
+
     // create user
-    router.post('/', async (req, res, next) => {
+    router.post('/sing-up', async (req, res, next) => {
         const { userId, email, fullName, password } = req.body;
         try{
             const hashPassword = await bcrypt.hash(password, 8);
-            const hashAccessKey = await bcrypt.hash(v1(10, true), 8);
-            const userData = new UserModel({userAcconut: { userId, email, fullName, password: hashPassword, accessKey: hashAccessKey} });
+            const userData = new UserModel({userAcconut: { userId, email, fullName, password: hashPassword} });
             await userData.save((err) => { 
                 if(err) {
                     next(err);
@@ -69,13 +88,14 @@ userPetition = (app) => {
         const data = req.body;
         try{
             const { userId, email, fullName, password } = data;
-            const params = { userId, email, fullName, password }
-            userId ? userId : delete params.userId;
-            email ? email : delete params.email;
-            fullName ? fullName : delete params.fullName;
-            password ? await bcrypt.hash(password, 10) : delete params.password;
-
-            await UserModel.findByIdAndUpdate(id, params);
+            userId ? await UserModel.findByIdAndUpdate(id,{'userAcconut.userId': userId}) : () => {} ;
+            email ? await UserModel.findByIdAndUpdate(id,{'userAcconut.email': email}) : () => {} ;
+            fullName ? await UserModel.findByIdAndUpdate(id,{'userAcconut.fullName': fullName}) : () => {} ;
+            if(password){
+                const hashPassword = await bcrypt.hash(password, 8);
+                await UserModel.findByIdAndUpdate(id,{'userAcconut.password': hashPassword})
+            }
+            res.status(200).json({'data': { userId, email, fullName, password } , 'id': id});
         }catch(e) {
             next(e);
             res.status(404).json({'message': 'user not found'});

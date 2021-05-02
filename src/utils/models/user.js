@@ -7,7 +7,6 @@ const userSchema = new Schema({
         fullName: { requiered: true, type: String },
         password: { requiered: true, type: String },
         email: { requiered: true, type: String, unique: true },
-        accessKey: { requiered: true, type: String, unique: true }
     },
     userPersonalData: {
         visa: {
