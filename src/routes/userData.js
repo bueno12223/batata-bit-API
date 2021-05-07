@@ -8,7 +8,7 @@ const validateAuth = require('../utils/auth/validateAuth');
 require('../utils/auth/basic');
 
 userPetition = (app) => {
-    const URI = `mongodb://${config.config.dbUser}:${config.config.dbPassword}@cluster0-shard-00-00.og6lz.mongodb.net:27017,cluster0-shard-00-01.og6lz.mongodb.net:27017,cluster0-shard-00-02.og6lz.mongodb.net:27017/${config.config.dbname}?ssl=true&replicaSet=atlas-13giey-shard-0&authSource=admin&retryWrites=true&w=majority`;
+    const URI = `mongodb://${config.dbUser}:${config.dbPassword}@cluster0-shard-00-00.og6lz.mongodb.net:27017,cluster0-shard-00-01.og6lz.mongodb.net:27017,cluster0-shard-00-02.og6lz.mongodb.net:27017/${config.dbname}?ssl=true&replicaSet=atlas-13giey-shard-0&authSource=admin&retryWrites=true&w=majority`;
     mongoose.connect(URI ,{ useNewUrlParser:true, useUnifiedTopology:true });
     mongoose.connection.once('open', () => console.log('Connected succesfully to mongo') );
     const router = express.Router()

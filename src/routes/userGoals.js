@@ -6,7 +6,7 @@ const moment = require('moment');
 
 const userGoals = (app) => {
     const router = express.Router()
-    app.use('/goal', validateAuth , router);
+    app.use('/goal', router);
     // get goal by id
     router.get('/:id', async (req, res, next) => {
         const id = req.params.id
@@ -22,7 +22,7 @@ const userGoals = (app) => {
         }
     })
     // create a goal
-    router.put('/:id', async(req, res, next) => {
+    router.put('/:id', validateAuth, async(req, res, next) => {
         const id = req.params.id;
         const {  end, title, icon, goal } = req.body;
         try{

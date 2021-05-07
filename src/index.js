@@ -6,6 +6,7 @@ const passport = require('passport');
 const userData = require('./routes/userData');
 const transacctionsUser = require('./routes/userTransaccions');
 const userGoals = require('./routes/userGoals');
+const config = require('./config');
 const app = express();
 
 // midlewares
@@ -31,9 +32,9 @@ app.use(notFoundHandler);
 
 // midlewares
 
-// erro 
+// error
 
 
-app.listen(3001, function () {
-    console.log(`http://localhost:3001`);   
+app.listen(config.port, function () {
+    console.log(`http://localhost:${config.port}`);   
 });
