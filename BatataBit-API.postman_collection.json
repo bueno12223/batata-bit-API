@@ -1,0 +1,260 @@
+{
+	"info": {
+		"_postman_id": "103944dd-6bef-44b0-bfbc-d840f81faaa0",
+		"name": "BatataBit-API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get user by email",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "1234",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "jesus@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"email\": \"jesus@gmail.com\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API}}/api/log-in",
+							"host": [
+								"{{API}}"
+							],
+							"path": [
+								"api",
+								"log-in"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " { \"userId\": \"mai23\", \"email\": \"jes@gmail.com\", \"fullName\": \"kok frain\", \"password\": \"1234\" }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API}}/user",
+							"host": [
+								"{{API}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "config user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transaccions",
+			"item": [
+				{
+					"name": "New transacction",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "New Deposit",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"ammount\": 100, \"to\": \"6089f478009a6f01885aa722\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API}}/transacctions/deposit",
+							"host": [
+								"{{API}}"
+							],
+							"path": [
+								"transacctions",
+								"deposit"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Goals",
+			"item": [
+				{
+					"name": "New goal",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"end\": \"2022-04-21\", \"title\": \"casa\", \"icon\": \"house\", \"goal\": 500}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API}}/goal/608864845b7e150e70a4b2ec",
+							"host": [
+								"{{API}}"
+							],
+							"path": [
+								"goal",
+								"608864845b7e150e70a4b2ec"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put money in goal",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"ammount\": 100, \"since\": \"608856cfdff81f0a40e0d836\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3001/goal/deposit/6089f478009a6f01885aa722",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"goal",
+								"deposit",
+								"6089f478009a6f01885aa722"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get goal",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API}}/goal/6089cea95fff5f0d9458266f",
+							"host": [
+								"{{API}}"
+							],
+							"path": [
+								"goal",
+								"6089cea95fff5f0d9458266f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete goal",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API}}/goal/6089f473009a6f01885aa721",
+							"host": [
+								"{{API}}"
+							],
+							"path": [
+								"goal",
+								"6089f473009a6f01885aa721"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		}
+	]
+}
