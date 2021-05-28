@@ -51,7 +51,7 @@ userPetition = (app) => {
             const userData = await UserModel.find({});
             const friends = []
             userData.forEach(e => friends.push({
-                email: e.userAcconut.email,
+                id: e._id,
                 fullName: e.userAcconut.fullName }))
             
             user.userPersonalData.userFriends = friends;

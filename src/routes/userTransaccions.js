@@ -8,7 +8,8 @@ const transacctionsUser = (app) => {
     const router = express.Router();
     app.use('/transacctions', router)
     router.put('/',validateAuth, validateTransaccion, async (req, res, next) => {
-        const { to, since, ammount, type, icon } = req.body;
+        const { to, since, ammount, nameTo, sinceName } = req.body;
+        console.log(req.body);
         try{ 
             const paramsTo = { 
                 $inc: {
@@ -16,7 +17,7 @@ const transacctionsUser = (app) => {
                     "userPersonalData.money.total": ammount,
                     },
                 $addToSet: {
-                    "userPersonalData.transacctions": { to, since, ammount, type, icon }
+                    "userPersonalData.transacctions": { to, since, ammount, transacction_type: sinceName, icon: 'exchange-alt' }
                 }
             }
             await UserModel.findByIdAndUpdate(to , paramsTo); 
@@ -27,7 +28,7 @@ const transacctionsUser = (app) => {
                     "userPersonalData.money.total": ammount * -1
                 },
                 $addToSet: {
-                    "userPersonalData.transacctions": { to, since,  ammount: ammount * -1, type, icon }
+                    "userPersonalData.transacctions": { to, since,  ammount: ammount * -1, transacction_type: nameTo, icon: 'exchange-alt' }
                 }
             }
             await UserModel.findByIdAndUpdate(since, paramsSince)
