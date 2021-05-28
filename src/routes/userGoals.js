@@ -30,6 +30,39 @@ const userGoals = (app) => {
         }
         
     })
+        // breake goal
+        router.put('/break', async (req, res, next) => {
+            const { userId, id } = req.body;
+            try{
+                // add the money
+                const userData = await userModel.findById(userId)
+                const {userPersonalData: {goals}} = userData
+                const transacction = goals.filter(e => e._id == id)
+                console.log(transacction)
+                const { ammount, icon, title} = transacction[0];
+                const params = {
+                    $pull: { 
+                        'userPersonalData.goals': {_id: id } 
+                    }
+                }
+                const paramsInc = {
+                    $inc: {
+                        "userPersonalData.money.incomer": ammount,
+                        "userPersonalData.money.total": ammount,
+                        },
+                    $addToSet: {
+                        'userPersonalData.transacctions': { to: 'you', since: id, ammount, transacction_type: title , icon }
+                    },
+                }
+                await userModel.findByIdAndUpdate(userId, paramsInc)
+                await userModel.findByIdAndUpdate(userId, params, { safe: true });
+                res.status(200).json({'message': 'delete success', 'id': id})
+            }catch(e) {
+                next(e);
+                res.status(401)
+            }
+        })
+        
         // create a goal
         router.put('/:id',async(req, res, next) => {
             const id = req.params.id;
@@ -54,37 +87,5 @@ const userGoals = (app) => {
             }
             
         })
-    // breake goal
-    router.delete('/', async (req, res, next) => {
-        const { userId, id } = req.body;
-        try{
-            // add the money
-            const userData = await userModel.findById(userId)
-            const {userPersonalData: {goals}} = userData
-            const transacction = goals.filter(e => e._id == id)
-            console.log(transacction)
-            const { ammount, icon, title} = transacction[0];
-            const params = {
-                $pull: { 
-                    'userPersonalData.goals': {_id: id } 
-                }
-            }
-            const paramsInc = {
-                $inc: {
-                    "userPersonalData.money.incomer": ammount,
-                    "userPersonalData.money.total": ammount,
-                    },
-                $addToSet: {
-                    'userPersonalData.transacctions': { to: 'you', since: id, ammount, transacction_type: title , icon }
-                },
-            }
-            await userModel.findByIdAndUpdate(userId, paramsInc)
-            await userModel.findByIdAndUpdate(userId, params, { safe: true });
-            res.status(200).json({'message': 'delete success', 'id': id})
-        }catch(e) {
-            next(e);
-            res.status(401)
-        }
-    })
 }
 module.exports = userGoals;
