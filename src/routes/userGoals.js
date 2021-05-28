@@ -1,18 +1,16 @@
 const express = require('express');
 const userModel = require('../utils/models/user');
-//const validateTransaccion = require('../utils/middleware/validateTransacction');
-//const validateAuth = require('../utils/auth/validateAuth');
+const validateAuth = require('../utils/auth/validateAuth');
 const moment = require('moment');
 
 const userGoals = (app) => {
     const router = express.Router()
     app.use('/goal', router);
     // put money in a goal
-    router.put('/deposit',
+    router.put('/deposit', validateAuth,
      async(req, res, next) => {
         const { ammount, since, title, icon } = req.body;
         try{
-            console.log(req.body);
             const params = {
                 $inc: { 
                     'userPersonalData.goals.$.ammount' : ammount,
@@ -20,7 +18,7 @@ const userGoals = (app) => {
                     'userPersonalData.money.total' : ammount * -1
                 },
                 $addToSet: {
-                    'userPersonalData.transacctions': { to: title, since: 'you', ammount, type: 'goal transacction', icon }
+                    'userPersonalData.transacctions': { to: since, since: 'you', ammount, transacction_type: title, icon }
                 }
             }
             
@@ -57,31 +55,31 @@ const userGoals = (app) => {
             
         })
     // breake goal
-    router.delete('/:id', async (req, res, next) => {
-
-        const id = req.params.id
+    router.delete('/', async (req, res, next) => {
+        const { userId, id } = req.body;
         try{
             // add the money
-            const userData = await userModel.findOne({'userPersonalData.goals._id': id})
+            const userData = await userModel.findById(userId)
             const {userPersonalData: {goals}} = userData
             const transacction = goals.filter(e => e._id == id)
-            const { ammount, icon } = transacction;
-            const paramsInc = { 
+            console.log(transacction)
+            const { ammount, icon, title} = transacction[0];
+            const params = {
+                $pull: { 
+                    'userPersonalData.goals': {_id: id } 
+                }
+            }
+            const paramsInc = {
                 $inc: {
                     "userPersonalData.money.incomer": ammount,
                     "userPersonalData.money.total": ammount,
                     },
                 $addToSet: {
-                    'userPersonalData.transacctions': { to: 'you', since: id, ammount, type: 'goal transacction', icon }
-                }
-            } 
-            await findOneAndUpdate({'userPersonalData.goals._id': id}, paramsInc);
-            // delete the goal
-
-            const params = {
-                $pull: { 'userPersonalData.goals': { _id: id }},
+                    'userPersonalData.transacctions': { to: 'you', since: id, ammount, transacction_type: title , icon }
+                },
             }
-            await userModel.findOneAndUpdate({}, params);
+            await userModel.findByIdAndUpdate(userId, paramsInc)
+            await userModel.findByIdAndUpdate(userId, params, { safe: true });
             res.status(200).json({'message': 'delete success', 'id': id})
         }catch(e) {
             next(e);
