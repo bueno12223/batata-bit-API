@@ -26,7 +26,7 @@ const userSchema = new Schema({
             date: {type: Date, default: moment().format('ll')  },
             ammount : Number, default: 0.00,
             transacction_type: {type: String, default: 'transacción rápida'},
-            icon: {type: String, default: 'transacción rápida'}
+            icon: {type: String, default: 'check'}
             }
         ],
         goals: [

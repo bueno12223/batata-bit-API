@@ -47,7 +47,6 @@ userPetition = (app) => {
         const { email } = req.body;
         try{
             let user = await UserModel.findOne({'userAcconut.email': email});
-            user.userAcconut.password = null;
 
             const userData = await UserModel.find({});
             const friends = []

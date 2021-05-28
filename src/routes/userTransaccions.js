@@ -37,21 +37,21 @@ const transacctionsUser = (app) => {
             res.status(404).json({'message': 'user not found'});
         }
     })
-    router.put('/deposit', validateAuth, async(req, res, next) => {
+    router.put('/deposit', async(req, res, next) => {
         const {ammount, to} = req.body;
         try{
-            const transaccionId = v1(10, true);
             const params = { 
                 $inc: {
                     "userPersonalData.money.incomer": ammount,
                     "userPersonalData.money.total": ammount,
                     },
                 $addToSet: {
-                    "userPersonalData.transacctions": { to, since: 'you', ammount, type: 'depósito', icon: 'money-check-alt', _id: transaccionId }
+                    "userPersonalData.transacctions": { to: 'you', since: 'you', ammount, transacction_type: 'depósito', icon: 'check'}
                 }
             }
+            console.log(to)
             await UserModel.findByIdAndUpdate(to , params); 
-            res.status(201).json({'message': 'deposit creted succsesfully', 'id': transaccionId })
+            res.status(201).json({'message': 'deposit creted succsesfully'})
         }catch(e){
             next(e);
             res.status(404).json({'message': 'user not found'});
