@@ -9,9 +9,68 @@ Our use the public version [here](https://batatabit.herokuapp.com)
 
 ## backend
 
-Currency works whit express, all the endpoints are protected whit authentication, first, create your account, all the request and responses, when you log in, give you a session id, you have to send it like a cookie in all your request
+Currency works whit express, all the endpoints are protected whit authentication, first, create your account, all the request and responses, when you log in, give you a session id, you have to send it like a cookie in all your request.
+Public url request [https://batatabit-api.herokuapp.com]
 
-you can see in ´postman-collections.json´ all the end points, request and response
+## EndPoints
+
+## User
+
+### Login user
+
+URL
+`URL/user/log-in`
+Body
+`{"email": example@gmail.com}`
+Method: POST
+Return a JWT whit the session ID, you have to send it like a cookie for futures request.
+
+### Config user
+
+URL
+`URL/user/:id`
+Body
+`{ userId, fullName, email, password, id }`
+If you do not send a data i will not modify.
+Method: PUT
+
+## Goals
+
+### Create a new goal
+
+URL
+`URL/goals/`
+Body
+`{ end, title, icon, goal, id }`
+METHOD PUT
+You have to send the title, font awesome icon, how much you going to save(goal), and the userID.
+
+### Deposit money in goal
+
+URL
+`URL/goals/deposit`
+Body
+`{ ammount, since, title, icon }`
+METHOD PUT
+You have to send how much(ammound), title and icon to do a histoty transacction.
+
+### Break goal
+
+URL
+`URL/goals/break`
+Body
+`{ id, userId }`
+METHOD PUT
+You have to send the userID and goalID.
+
+## Transfer money to other user
+
+URL
+`URL/goals/transacctions`
+Body
+`{ to, since, ammount, nameTo, sinceName }`
+METHOD PUT
+You have to send the the ammount to send, since and to but id, to save the names you have to send, sinceName and nameTo, so when you see the transacction in the home it will say the user Name and no the id.
 
 ## scripts
 
@@ -24,6 +83,16 @@ It open in the port that you asigned the server
 ### npm run dev
 
 It open in the port that you asigned the server, but any change that you do, open the server again whit the changes done.
+
+## Midlewares
+
+### UserAuth
+
+It use passport.js, a framework that help in handle the sesion JWT and validate the password, the passport use bcrypt to hash it.
+
+### ValidateTtransaction
+
+Before do any transacction it verify if the user have the ammount enoguth to do this transacction.
 
 ## Installation :wrench
 
